@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IP Auto-Scanner</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .status { margin-top: 20px; font-weight: bold; color: #555; }
+    </style>
+</head>
+<body>
+    <h2>Scanning for Active Server...</h2>
+    <div id="display" class="status">Starting scan...</div>
+
+    <script>
+        const ipList = [
+            "192.168.0.102",
+            "192.168.0.103",
+            "192.168.0.104"
+        ];
+
+        async function checkIP(ip) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 2000); // 2 second limit
+
+            try {
+                // We use no-cors because we just want to see if the server responds, 
+                // even if it rejects the specific cross-origin request.
+                await fetch(`http://${ip}`, { 
+                    mode: 'no-cors', 
+                    signal: controller.signal 
+                });
+                return true;
+            } catch (err) {
+                return false;
+            } finally {
+                clearTimeout(timeout);
+            }
+        }
+
+        async function startScan() {
+            const display = document.getElementById('display');
+            
+            for (let ip of ipList) {
+                display.innerText = `Checking ${ip}...`;
+                
+                const isActive = await checkIP(ip);
+                
+                if (isActive) {
+                    display.innerText = `Found active IP: ${ip}. Redirecting...`;
+                    display.style.color = "green";
+                    
+                    // Small delay so you can see the result before redirecting
+                    setTimeout(() => {
+                        window.location.replace(`http://${ip}`);
+                    }, 1000);
+                    return; 
+                }
+            }
+            
+            display.innerText = "No active IP addresses found in the list.";
+            display.style.color = "red";
+        }
+
+        startScan();
+    </script>
+</body>
+</html>
