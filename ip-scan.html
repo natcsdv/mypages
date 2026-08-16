@@ -13,9 +13,18 @@
 
     <script>
         const ipList = [
+            "192.168.0.100",
+            "192.168.0.101",
             "192.168.0.102",
             "192.168.0.103",
-            "192.168.0.104"
+            "192.168.0.104",
+            "192.168.0.105",
+            "192.168.0.106",
+            "192.168.0.107",
+            "192.168.0.108",
+            "192.168.0.109",
+            "192.168.0.110",
+            "192.168.0.111"
         ];
 
         async function checkIP(ip) {
@@ -25,7 +34,7 @@
             try {
                 // We use no-cors because we just want to see if the server responds, 
                 // even if it rejects the specific cross-origin request.
-                await fetch(`http://${ip}`, { 
+                await fetch(`http://${ip}/hour_gallery_3`, { 
                     mode: 'no-cors', 
                     signal: controller.signal 
                 });
