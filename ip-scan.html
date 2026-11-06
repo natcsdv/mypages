@@ -28,29 +28,23 @@
         ];
 
         async function checkIP(ip) {
-			const controller = new AbortController();
-			const timeout = setTimeout(() => controller.abort(), 2000);
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 2000); // 2 second limit
 
-			try {
-				const response = await fetch(`http://${ip}`, { 
-					signal: controller.signal 
-				});
-
-				// Strict check: only return true for exact status 200
-				if (response.status === 200) {
-					return true;
-				}
-
-				console.log(`${ip} returned status ${response.status}. Skipping...`);
-				return false;
-
-			} catch (err) {
-				// Handles offline IPs, timeouts, or CORS failures
-				return false; 
-			} finally {
-				clearTimeout(timeout);
-			}
-		}
+            try {
+                // We use no-cors because we just want to see if the server responds, 
+                // even if it rejects the specific cross-origin request.
+                await fetch(`http://${ip}/app_5`, { 
+                    mode: 'no-cors', 
+                    signal: controller.signal 
+                });
+                return true;
+            } catch (err) {
+                return false;
+            } finally {
+                clearTimeout(timeout);
+            }
+        }
 
         async function startScan() {
             const display = document.getElementById('display');
